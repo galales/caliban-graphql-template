@@ -1,5 +1,7 @@
 package galales.graphqltemplate.service.elemrepository
 
+import java.time.{LocalDateTime, ZoneId}
+
 import caliban.CalibanError.ExecutionError
 import galales.graphqltemplate.datasource.database.{ElemCursor, ElemRecord, ElemRecordsPage}
 import galales.graphqltemplate.graphql.{Next, Order, Previous}
@@ -9,8 +11,10 @@ import zio.{Has, Ref, Task, ZLayer}
 
 object ElemRepositoryInMem {
 
-  def mem: ZLayer[Has[Ref[List[ElemRecord]]], Nothing, ElemRepository] =
-    ZLayer.fromService[Ref[List[ElemRecord]], ElemRepository.Service] { source =>
+//  val mem: ZLayer[Has[Ref[List[ElemRecord]]], Nothing, ElemRepository] =
+  def mem(source: Ref[List[ElemRecord]]): ZLayer[Any, Nothing, ElemRepository] =
+//    ZLayer.fromService[Ref[List[ElemRecord]], ElemRepository.Service] { source =>
+    ZLayer.succeed{
       new ElemRepository.Service {
 
         def getElem(id: String): Task[ElemRecord] =
@@ -42,8 +46,27 @@ object ElemRepositoryInMem {
             ElemRecordsPage(resultList, prevCursor, nextCursor)
           }
 
-        def createElem(request: CreateElem): Task[ElemRecord] = ???
-        def deleteElem(id: String): Task[Boolean]             = ???
+        def createElem(request: CreateElem): Task[ElemRecord] = {
+          val newRecord: ElemRecord =
+            ElemRecord(request.id, request.description, LocalDateTime.now.atZone(ZoneId.of("UTC")).toEpochSecond)
+
+          val a = for {
+            l <- source.get
+            _ = println(l)
+          update <- source.update(_ :+ newRecord).as(newRecord)
+            _ = println(update)
+          updated <- source.get
+            _ = println(updated)
+          } yield update
+//          val res = source.update(_ :+ newRecord).as(newRecord)
+//          res.as(source.get.map(l => println(l)))
+//          res
+//          source.update(_ :+ newRecord).as(newRecord)
+          a
+        }
+
+        def deleteElem(id: String): Task[Boolean] =
+          source.update(_.filter(_.id != id)).as(true)
       }
     }
 
