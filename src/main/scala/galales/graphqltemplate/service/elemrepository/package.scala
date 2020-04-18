@@ -2,7 +2,6 @@ package galales.graphqltemplate.service
 
 import galales.graphqltemplate.datasource.database.{ElemRecord, ElemRecordsPage}
 import galales.graphqltemplate.graphql.requests.{CreateElem, ListElems}
-import galales.graphqltemplate.datasource.database.ElemRecord
 import zio.{Has, RIO, Task}
 
 package object elemrepository {

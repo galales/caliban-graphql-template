@@ -1,5 +1,3 @@
 package galales.graphqltemplate.config
 
-case class Configurations(
-  serverConfig: ServerConfig
-)
+case class Configurations(serverConfig: ServerConfig)

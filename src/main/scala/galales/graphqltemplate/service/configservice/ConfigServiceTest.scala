@@ -1,7 +1,6 @@
 package galales.graphqltemplate.service.configservice
 
-import galales.graphqltemplate.config._
-import galales.graphqltemplate.config.ServerConfig
+import galales.graphqltemplate.config.{ServerConfig, _}
 import org.log4s.getLogger
 import zio.{Task, ZLayer}
 

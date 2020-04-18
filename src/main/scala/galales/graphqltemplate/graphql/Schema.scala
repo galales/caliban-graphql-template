@@ -5,11 +5,10 @@ import caliban.schema.GenericSchema
 import caliban.wrappers.ApolloTracing.apolloTracing
 import caliban.wrappers.Wrappers.{maxDepth, maxFields, printSlowQueries, timeout}
 import caliban.{GraphQL, RootResolver}
-import galales.graphqltemplate.graphql.requests._
+import galales.graphqltemplate.graphql.requests.{CreateElem, DeleteElem, GetElem, ListElems}
 import galales.graphqltemplate.graphql.responses._
 import galales.graphqltemplate.service.elemservice
 import galales.graphqltemplate.{AppEnvironment, ResponseTask}
-import galales.graphqltemplate.graphql.requests.{CreateElem, DeleteElem, GetElem, ListElems}
 import zio.clock.Clock
 import zio.console.Console
 import zio.duration._

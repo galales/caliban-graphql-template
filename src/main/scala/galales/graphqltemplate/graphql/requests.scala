@@ -10,7 +10,7 @@ object requests {
 
   final case class GetElem(id: String)
 
-  final case class ListElems (
+  final case class ListElems(
     description: String,
     limit: Int,
     order: Order,
