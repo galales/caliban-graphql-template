@@ -1,7 +1,8 @@
 package galales.graphqltemplate.service.elemservice
 
 import caliban.CalibanError.ExecutionError
-import galales.graphqltemplate.graphql.requests.{CreateElem, DeleteElem, GetElem, ListElems}
+import galales.graphqltemplate.graphql.internals.InnerListElems
+import galales.graphqltemplate.graphql.requests.{CreateElem, DeleteElem, GetElem}
 import galales.graphqltemplate.graphql.responses.{Elem, Pagination}
 import galales.graphqltemplate.service.elemrepository.ElemRepository
 import zio.{Task, ZLayer}
@@ -14,7 +15,7 @@ object ElemServiceProd {
         override def getElem(request: GetElem): Task[Elem] =
           elemRepository.getElem(request.id).map(_.toElem)
 
-        override def listElems(request: ListElems): Task[Pagination[Elem]] =
+        override def listElems(request: InnerListElems): Task[Pagination[Elem]] =
           elemRepository
             .listElems(request)
             .bimap(

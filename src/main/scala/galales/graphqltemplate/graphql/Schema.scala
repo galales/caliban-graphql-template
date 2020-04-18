@@ -27,7 +27,7 @@ object Schema extends GenericSchema[AppEnvironment] with Scalars {
   val api: GraphQL[Console with Clock with AppEnvironment] =
     graphQL(
       RootResolver(
-        Queries(getElem => elemservice.getElem(getElem), listElems => elemservice.listElems(listElems)),
+        Queries(getElem => elemservice.getElem(getElem), listElems => elemservice.listElems(listElems.toInternal)),
         Mutations(createElem => elemservice.createElem(createElem), deleteElem => elemservice.deleteElem(deleteElem))
       )
     ) @@
