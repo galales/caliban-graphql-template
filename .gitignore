@@ -1,0 +1,9 @@
+/project/project/
+/project/target/
+/target/
+/.idea/
+.env
+.metals
+.bloop
+/project/metals.sbt
+.jvmopts
