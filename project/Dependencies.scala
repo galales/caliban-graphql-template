@@ -9,12 +9,6 @@ object Dependencies {
     lazy val circle     = namespace %% "enumeratum-circe" % enumeratumCirceVersion
   }
 
-  object aws {
-    lazy val namespace = "com.amazonaws"
-    lazy val dynamodb  = namespace % "aws-java-sdk-dynamodb" % awsDynamoDbVersion
-
-  }
-
   object zio {
     lazy val namespace = "dev.zio"
     lazy val test      = namespace %% "zio-test" % zioVersion
@@ -46,40 +40,19 @@ object Dependencies {
     lazy val classic   = namespace % "logback-classic" % logbackVersion
   }
 
-  object mockito {
-    lazy val namespace = "org.mockito"
-    lazy val all       = namespace %% "mockito-scala" % mockitoVersion
-  }
-
   object http4s {
     lazy val namespace = "org.http4s"
 
     lazy val dsl         = namespace %% "http4s-dsl"          % http4sVersion
     lazy val blazeClient = namespace %% "http4s-blaze-client" % http4sVersion
   }
-  object auth0 {
-    lazy val namespace = "com.auth0"
-    lazy val javaJwt   = namespace % "java-jwt" % javaJwtVersion
-    lazy val jwksRsa   = namespace % "jwks-rsa" % jwksRsaVersion
-  }
-
-  object testcontainer {
-    lazy val namespace  = "org.testcontainers"
-    lazy val localstack = namespace % "localstack" % testcontainersVersion
-  }
 
   object Jars {
     lazy val `server`: Seq[ModuleID] = Seq(
-      // For making Java 12 happy
-      "javax.annotation" % "javax.annotation-api" % "1.3.2" % "compile",
-      //
-      auth0.javaJwt            % "compile",
-      auth0.jwksRsa            % "compile",
       caliban.caliban          % "compile",
       caliban.calibanHttp4s    % "compile",
       typesafe.config          % "compile",
       logback.classic          % "compile",
-      aws.dynamodb             % "compile",
       circe.core               % "compile",
       circe.generic            % "compile",
       circe.parser             % "compile",
@@ -87,10 +60,8 @@ object Dependencies {
       http4s.blazeClient       % "compile",
       enumeratum.enumeratum    % "compile",
       enumeratum.circle        % "compile",
-      mockito.all              % "compile,test", // TODO Not working without compile...?
       zio.test                 % "test",
       zio.testsbt              % "test",
-      testcontainer.localstack % "test"
     )
   }
 }
