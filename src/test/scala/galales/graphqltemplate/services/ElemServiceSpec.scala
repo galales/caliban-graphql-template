@@ -1,10 +1,12 @@
 package galales.graphqltemplate.services
 
+import java.time.LocalDateTime
+
 import caliban.CalibanError.ExecutionError
 import galales.graphqltemplate.datasource.database.ElemRecord
 import galales.graphqltemplate.graphql.Order
 import galales.graphqltemplate.graphql.internals.InnerListElems
-import galales.graphqltemplate.graphql.requests.{GetElem, ListElems}
+import galales.graphqltemplate.graphql.requests.{CreateElem, DeleteElem, GetElem, ListElems}
 import galales.graphqltemplate.graphql.responses.{Elem, Pagination}
 import galales.graphqltemplate.service.configservice.ConfigServiceProd
 import galales.graphqltemplate.service.elemrepository.ElemRepositoryInMem
@@ -19,7 +21,7 @@ object ElemServiceSpec {
   import ElemServiceSuite._
 
   val getSuite: Spec[Any, TestFailure[Throwable], TestSuccess] =
-    suite("Query Operations")(
+    suite("Get Element")(
       testM("Get existing element") {
         assertM {
           for {
@@ -123,6 +125,60 @@ object ElemServiceSpec {
         )
       }
     )
+
+  val createSuite: Spec[Any, TestFailure[Throwable], TestSuccess] =
+    suite("Create Element")(
+      testM("Return value") {
+        assertM {
+          for {
+            data <- Ref.make(List.empty[ElemRecord])
+            env     = getEnv(data)
+            request = CreateElem("idNew", "descriptionNew")
+            result <- elemservice.createElem(request).provideLayer(env)
+          } yield result
+        }(
+          hasField("id", (r: Elem) => r.id, equalTo("idNew")) &&
+            hasField("description", (r: Elem) => r.description, equalTo("descriptionNew")) &&
+            hasField("createdTime", (r: Elem) => r.createdTime, isLessThanEqualTo(LocalDateTime.now))
+        )
+      },
+      testM("New element is added") {
+        assertM {
+          for {
+            data <- Ref.make(List(elemRecord1, elemRecord2))
+            env     = getEnv(data)
+            request = CreateElem("idNew", "descriptionNew")
+            _       <- elemservice.createElem(request).provideLayer(env)
+            newData <- data.get
+          } yield newData.map(_.id)
+        }(equalTo(List(elemRecord1.id, elemRecord2.id, "idNew")))
+      }
+    )
+
+  val deleteSuite: Spec[Any, TestFailure[Throwable], TestSuccess] =
+    suite("Delete Element")(
+      testM("Return value") {
+        assertM {
+          for {
+            data <- Ref.make(List(elemRecord1, elemRecord2))
+            env     = getEnv(data)
+            request = DeleteElem(elemRecord1.id)
+            result <- elemservice.deleteElem(request).provideLayer(env)
+          } yield result
+        }(equalTo(true))
+      },
+      testM("Element is deleted") {
+        assertM {
+          for {
+            data <- Ref.make(List(elemRecord1, elemRecord2, elemRecord3))
+            env     = getEnv(data)
+            request = DeleteElem(elemRecord1.id)
+            _       <- elemservice.deleteElem(request).provideLayer(env)
+            newData <- data.get
+          } yield newData
+        }(equalTo(List(elemRecord2, elemRecord3)))
+      }
+    )
 }
 
 object ElemServiceSuite extends DefaultRunnableSpec {
@@ -134,7 +190,10 @@ object ElemServiceSuite extends DefaultRunnableSpec {
     )
 
   def spec: Spec[Environment, TestFailure[Throwable], TestSuccess] =
-    suite("Element Service")(ElemServiceSpec.getSuite, ElemServiceSpec.listSuite)
+    suite("Element Service")(
+      suite("Queries")(ElemServiceSpec.getSuite, ElemServiceSpec.listSuite),
+      suite("Mutations")(ElemServiceSpec.createSuite, ElemServiceSpec.deleteSuite)
+    )
 
   val elemRecord1: ElemRecord = ElemRecord("id1", "description1", 1L)
   val elemRecord2: ElemRecord = ElemRecord("id2", "description2", 2L)
