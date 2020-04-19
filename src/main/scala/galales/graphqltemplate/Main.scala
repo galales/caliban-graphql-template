@@ -4,6 +4,7 @@ import caliban.Http4sAdapter
 import cats.data.Kleisli
 import cats.effect.Blocker
 import galales.graphqltemplate.graphql.Schema
+import galales.graphqltemplate.service.configservice
 import org.http4s.StaticFile
 import org.http4s.implicits._
 import org.http4s.server.Router
@@ -23,8 +24,9 @@ object Main extends CatsApp {
       blocker     <- ZIO.access[Blocking](_.get.blockingExecutor.asEC).map(Blocker.liftExecutionContext)
       env         <- getLiveEnv
       interpreter <- Schema.api.interpreter.map(_.provideCustomLayer(env))
+      serverConfig <- configservice.getConfigurations.provideLayer(env).map(_.serverConfig)
       _ <- BlazeServerBuilder[ExampleTask]
-        .bindHttp(8088, "localhost")
+        .bindHttp(serverConfig.port, serverConfig.host)
         .withHttpApp(
           Router[ExampleTask](
             "/api/graphql" -> CORS(Http4sAdapter.makeHttpService(interpreter)),

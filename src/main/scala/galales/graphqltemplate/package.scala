@@ -1,7 +1,7 @@
 package galales
 
 import galales.graphqltemplate.datasource.database.ElemRecord
-import galales.graphqltemplate.service.configservice.{ConfigService, ConfigServiceProd}
+import galales.graphqltemplate.service.configservice.{ConfigService, ConfigServiceTest}
 import galales.graphqltemplate.service.elemrepository.{ElemRepository, ElemRepositoryInMem}
 import galales.graphqltemplate.service.elemservice.{ElemService, ElemServiceProd}
 import zio._
@@ -25,7 +25,7 @@ package object graphqltemplate {
         buildEnv(
           elemService = ElemServiceProd.live,
           elemRepository = ElemRepositoryInMem.mem(s),
-          configService = ConfigServiceProd.live
+          configService = ConfigServiceTest.test
       )
     )
   }
