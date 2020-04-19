@@ -48,19 +48,7 @@ object ElemRepositoryInMem {
           val newRecord: ElemRecord =
             ElemRecord(request.id, request.description, LocalDateTime.now.atZone(ZoneId.of("UTC")).toEpochSecond)
 
-          val a = for {
-            l <- source.get
-            _ = println(l)
-            update <- source.update(_ :+ newRecord).as(newRecord)
-            _ = println(update)
-            updated <- source.get
-            _ = println(updated)
-          } yield update
-//          val res = source.update(_ :+ newRecord).as(newRecord)
-//          res.as(source.get.map(l => println(l)))
-//          res
-//          source.update(_ :+ newRecord).as(newRecord)
-          a
+          source.update(_ :+ newRecord).as(newRecord)
         }
 
         def deleteElem(id: String): Task[Boolean] =
