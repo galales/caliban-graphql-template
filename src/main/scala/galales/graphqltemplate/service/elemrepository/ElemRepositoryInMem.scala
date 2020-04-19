@@ -24,7 +24,7 @@ object ElemRepositoryInMem {
         def listElems(request: InnerListElems): Task[ElemRecordsPage] =
           source.get.map { list =>
             val offset: Int = request.cursor.map(_.offset).getOrElse(0)
-            val resultList = list
+            val allResults = list
               .filter(_.description.contains(request.description))
               .sortWith(
                 (e1, e2) =>
@@ -33,15 +33,16 @@ object ElemRepositoryInMem {
                     case Order.DESC => e1.createdTime > e2.createdTime
                 }
               )
-              .slice(offset, offset + request.limit)
+
+            val paginatedResult = allResults.slice(offset, offset + request.limit)
 
             val prevCursor: Option[ElemCursor] =
               if (offset == 0) None else Some(ElemCursor((offset - request.limit).max(0), Previous))
             val nextCursor: Option[ElemCursor] =
-              if (offset + request.limit >= list.length) None
+              if (offset + request.limit >= allResults.length) None
               else Some(ElemCursor(offset + request.limit, Next))
 
-            ElemRecordsPage(resultList, prevCursor, nextCursor)
+            ElemRecordsPage(paginatedResult, prevCursor, nextCursor)
           }
 
         def createElem(request: CreateElem): Task[ElemRecord] = {
