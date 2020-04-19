@@ -3,7 +3,6 @@ package galales.graphqltemplate
 import caliban.Http4sAdapter
 import cats.data.Kleisli
 import cats.effect.Blocker
-import galales.graphqltemplate.datasource.database.ElemRecord
 import galales.graphqltemplate.graphql.Schema
 import org.http4s.StaticFile
 import org.http4s.implicits._
@@ -22,8 +21,8 @@ object Main extends CatsApp {
   override def run(args: List[String]): ZIO[ZEnv, Nothing, Int] =
     (for {
       blocker     <- ZIO.access[Blocking](_.get.blockingExecutor.asEC).map(Blocker.liftExecutionContext)
-      source <- Ref.make(List(ElemRecord("id1", "description1", 1L), ElemRecord("id2", "description2", 2L)))
-      interpreter <- Schema.api.interpreter.map(_.provideCustomLayer(getLiveEnv(source)))
+      env         <- getLiveEnv
+      interpreter <- Schema.api.interpreter.map(_.provideCustomLayer(env))
       _ <- BlazeServerBuilder[ExampleTask]
         .bindHttp(8088, "localhost")
         .withHttpApp(

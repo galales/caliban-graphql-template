@@ -4,17 +4,15 @@ import java.time.{LocalDateTime, ZoneId}
 
 import caliban.CalibanError.ExecutionError
 import galales.graphqltemplate.datasource.database.{ElemCursor, ElemRecord, ElemRecordsPage}
-import galales.graphqltemplate.graphql.{Next, Order, Previous}
 import galales.graphqltemplate.graphql.internals.InnerListElems
 import galales.graphqltemplate.graphql.requests.CreateElem
-import zio.{Has, Ref, Task, ZLayer}
+import galales.graphqltemplate.graphql.{Next, Order, Previous}
+import zio.{Ref, Task, ZLayer}
 
 object ElemRepositoryInMem {
 
-//  val mem: ZLayer[Has[Ref[List[ElemRecord]]], Nothing, ElemRepository] =
   def mem(source: Ref[List[ElemRecord]]): ZLayer[Any, Nothing, ElemRepository] =
-//    ZLayer.fromService[Ref[List[ElemRecord]], ElemRepository.Service] { source =>
-    ZLayer.succeed{
+    ZLayer.succeed {
       new ElemRepository.Service {
 
         def getElem(id: String): Task[ElemRecord] =
@@ -53,9 +51,9 @@ object ElemRepositoryInMem {
           val a = for {
             l <- source.get
             _ = println(l)
-          update <- source.update(_ :+ newRecord).as(newRecord)
+            update <- source.update(_ :+ newRecord).as(newRecord)
             _ = println(update)
-          updated <- source.get
+            updated <- source.get
             _ = println(updated)
           } yield update
 //          val res = source.update(_ :+ newRecord).as(newRecord)

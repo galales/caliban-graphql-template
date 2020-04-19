@@ -16,17 +16,17 @@ package object graphqltemplate {
 
   type AppEnvironment = ElemService with ElemRepository with ConfigService with Blocking with Console with Clock
 
-  def getLiveEnv(source: Ref[List[ElemRecord]]): ZLayer[Any, Throwable, AppEnvironment] = {
-//  def getLiveEnv: ZLayer[Any, Throwable, AppEnvironment] = {
+  val getLiveEnv: Task[ZLayer[Any, Throwable, AppEnvironment]] = {
 
-//    val source: ZLayer[Any, Nothing, Has[Ref[List[ElemRecord]]]] =
-//      ZLayer.fromEffect(Ref.make(List(ElemRecord("id1", "description1", 1L), ElemRecord("id2", "description2", 2L))))
+    val source = Ref.make(List(ElemRecord("id1", "description1", 1L), ElemRecord("id2", "description2", 2L)))
 
-    buildEnv(
-      elemService = ElemServiceProd.live,
-//      elemRepository = source >>> ElemRepositoryInMem.mem,
-      elemRepository = ElemRepositoryInMem.mem(source),
-      configService = ConfigServiceProd.live
+    source.map(
+      s =>
+        buildEnv(
+          elemService = ElemServiceProd.live,
+          elemRepository = ElemRepositoryInMem.mem(s),
+          configService = ConfigServiceProd.live
+      )
     )
   }
 
