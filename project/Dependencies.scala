@@ -11,6 +11,7 @@ object Dependencies {
 
   object zio {
     lazy val namespace = "dev.zio"
+    lazy val logging   = namespace %% "zio-logging" % zioVersion
     lazy val test      = namespace %% "zio-test" % zioVersion
     lazy val testsbt   = namespace %% "zio-test-sbt" % zioVersion
   }
@@ -49,19 +50,20 @@ object Dependencies {
 
   object Jars {
     lazy val `server`: Seq[ModuleID] = Seq(
-      caliban.caliban          % "compile",
-      caliban.calibanHttp4s    % "compile",
-      typesafe.config          % "compile",
-      logback.classic          % "compile",
-      circe.core               % "compile",
-      circe.generic            % "compile",
-      circe.parser             % "compile",
-      http4s.dsl               % "compile",
-      http4s.blazeClient       % "compile",
-      enumeratum.enumeratum    % "compile",
-      enumeratum.circle        % "compile",
-      zio.test                 % "test",
-      zio.testsbt              % "test",
+      caliban.caliban       % "compile",
+      caliban.calibanHttp4s % "compile",
+      typesafe.config       % "compile",
+      logback.classic       % "compile",
+      circe.core            % "compile",
+      circe.generic         % "compile",
+      circe.parser          % "compile",
+      http4s.dsl            % "compile",
+      http4s.blazeClient    % "compile",
+      enumeratum.enumeratum % "compile",
+      enumeratum.circle     % "compile",
+      zio.logging           % "compile",
+      zio.test              % "test",
+      zio.testsbt           % "test"
     )
   }
 }
